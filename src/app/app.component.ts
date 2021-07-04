@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
+import {MazeGeneratorService} from "../services/maze-generator.service";
+import {Maze} from "../types/maze";
 
 @Component({
   selector: 'app-root',
