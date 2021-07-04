@@ -19,7 +19,6 @@ export class MazeHelperService {
     const cell = maze.cells.find(value => value.x == 0 && value.y == 0);
     if (!cell) {
       throw new Error("No Start found");
-      return;
     }
 
     maze.begin = cell;
