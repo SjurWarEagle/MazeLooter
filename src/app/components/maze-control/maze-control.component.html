@@ -1,2 +1,2 @@
-<app-maze-display #mazedisplay [maze]="maze" [radius]="9999"></app-maze-display>
-<app-maze-zoomed #mazezoomed [maze]="maze" [radius]="3"></app-maze-zoomed>
+<!--<app-maze-display #mazedisplay [maze]="maze" [radius]="9999"></app-maze-display>-->
+<app-maze-zoomed #mazezoomed [maze]="zoomedMaze" [topLeft]="maze.player"></app-maze-zoomed>

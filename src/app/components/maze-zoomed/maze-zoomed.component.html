@@ -1,2 +1,31 @@
-<canvas #mazearea width="500" height="500" class="maze-area"></canvas>
+<div class="overall">
 
+  <div class="specials">
+    <div class="maze-area" [ngStyle]="
+      {
+        'grid-template-columns': 'repeat(' + shiftX + ', '+cellWidth+'px)',
+        'grid-template-rows': 'repeat(' + shiftY + ', '+cellWidth+'px)'
+
+      }">
+        <span *ngFor="let cell of _maze.cells">
+          <img [style]="getStyleForCell(cell)" class="maze-cell-special"
+               [src]="getFilenameForSpecialFloorTile(cell)"/>
+        </span>
+    </div>
+  </div>
+
+  <div class="map">
+    <div class="maze-area" [ngStyle]="
+      {
+        'grid-template-columns': 'repeat(' + shiftX + ', '+cellWidth+'px)',
+        'grid-template-rows': 'repeat(' + shiftY + ', '+cellWidth+'px)'
+
+      }">
+        <span *ngFor="let cell of _maze.cells">
+          <img [style]="getStyleForCell(cell)" class="maze-cell"
+               [src]="getFilenameForFloorTile(cell.walls)"/>
+        </span>
+    </div>
+  </div>
+
+</div>

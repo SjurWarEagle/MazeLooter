@@ -1,5 +1,28 @@
 .maze-area {
-  width: 500px;
-  height: 500px;
+  display: grid;
+  gap: 0;
   border: solid blue 1px;
+}
+
+.maze-cell {
+  display: block;
+}
+
+.maze-cell-special{
+  z-index: -10;
+  transform: scale(0.75);
+}
+
+.map {
+  grid-area: all;
+}
+
+.overall {
+  display: grid;
+  grid-template-areas: "all";
+}
+
+.specials {
+  z-index: 10;
+  grid-area: all
 }

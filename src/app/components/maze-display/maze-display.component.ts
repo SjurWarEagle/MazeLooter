@@ -13,6 +13,8 @@ export class MazeDisplayComponent implements AfterViewInit {
   @Input()
   public maze: Maze = new Maze();
 
+  public showSolution=true;
+
   @Input()
   public radius: number = 0;
 
@@ -62,8 +64,8 @@ export class MazeDisplayComponent implements AfterViewInit {
       ctx.fillStyle = 'green';
     } else if (isBegin) {
       ctx.fillStyle = 'cyan';
-    } else if (isPartOfWayToExit) {
-      ctx.fillStyle = 'silver';
+    } else if (isPartOfWayToExit && this.showSolution) {
+      ctx.fillStyle = 'lightblue';
     } else if (cell.visited) {
       ctx.fillStyle = 'lightgray';
     } else {
@@ -87,22 +89,12 @@ export class MazeDisplayComponent implements AfterViewInit {
   }
 
   public drawMaze(): void {
-    // const ctx = this.mazeArea.nativeElement.getContext('2d');
-    // if (!ctx) {
-    //   throw new Error("Problem with ctx==null");
-    // }
 
     if (this.radius > 0) {
       this.drawRegion(this.maze.player, this.radius);
     } else {
       this.drawRegion(this.maze.player, Number.MAX_SAFE_INTEGER);
     }
-
-    // for (let mazeKey in this.maze.cells) {
-    //   const cell = this.maze.cells[mazeKey];
-    //   this.drawSpecialField(cell, ctx);
-    //   this.drawWall(cell, ctx);
-    // }
   }
 
   // @ts-ignore
@@ -110,5 +102,6 @@ export class MazeDisplayComponent implements AfterViewInit {
     const mazeSize = this.mazeArea.nativeElement.getBoundingClientRect();
     this.cellWidth = Math.floor(Math.min(mazeSize.width, mazeSize.height) / Math.sqrt(this.maze.cells.length));
     this.drawMaze();
+
   }
 }

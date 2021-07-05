@@ -1,7 +1,7 @@
 import {Component, ElementRef, Input, AfterViewInit, ViewChild} from '@angular/core';
 import {MazeCell} from "../../../types/maze-cell";
 import {Maze} from "../../../types/maze";
-import {min, minBy} from "lodash";
+import {minBy, maxBy} from "lodash";
 
 @Component({
   selector: 'app-maze-zoomed',
@@ -9,15 +9,39 @@ import {min, minBy} from "lodash";
   styleUrls: ['./maze-zoomed.component.scss']
 })
 export class MazeZoomedComponent implements AfterViewInit {
-  private cellWidth = 1;
+  private maxX = 1;
+  private minX = 1;
+  private maxY = 1;
+  private minY = 1;
+  public shiftX = 1;
+  public shiftY = 1;
 
   @Input()
-  public maze: Maze = new Maze();
+  public set maze(value: Maze) {
+    this._maze = value;
+    if (value && value.cells && value.cells.length > 1) {
+
+      this.maxX = maxBy(this._maze.cells, (v) => v.x)!.x;
+      this.minX = minBy(this._maze.cells, (v) => v.x)!.x;
+      this.maxY = maxBy(this._maze.cells, (v) => v.y)!.y;
+      this.minY = minBy(this._maze.cells, (v) => v.y)!.y;
+      this.shiftX = Math.abs(this.maxX - this.minX) + 1;
+      this.shiftY = Math.abs(this.maxY - this.minY) + 1;
+    }
+
+  }
+
+  public cellWidth = 64;
+
+  public _maze: Maze = new Maze();
+
+  @Input()
+  public topLeft: MazeCell = new MazeCell(0, 0);
 
   @Input()
   public radius: number = 0;
 
-  @ViewChild('mazearea', {static: true})
+  @ViewChild('mazeareaZoomed', {static: true})
   // @ts-ignore
   public mazeArea: ElementRef<HTMLCanvasElement>;
 
@@ -29,83 +53,94 @@ export class MazeZoomedComponent implements AfterViewInit {
 
   private drawWall(cell: MazeCell, ctx: CanvasRenderingContext2D, topLeftX: number, topLeftY: number) {
     ctx.fillStyle = 'black';
-    const x = cell.x - topLeftX;
-    const y = cell.y - topLeftY;
+    const x = Math.abs(topLeftX - cell.x);
+    const y = Math.abs(topLeftY - cell.y);
 
     if (cell.walls[0]) {
-      ctx.moveTo((x) * this.cellWidth, (y) * this.cellWidth);
-      ctx.lineTo((x + 1) * this.cellWidth, (y) * this.cellWidth);
+      ctx.moveTo(x * this.cellWidth, y * this.cellWidth);
+      ctx.lineTo((x + 1) * this.cellWidth, y * this.cellWidth);
     }
     if (cell.walls[1]) {
-      ctx.moveTo((x + 1) * this.cellWidth, (y) * this.cellWidth);
+      ctx.moveTo((x + 1) * this.cellWidth, y * this.cellWidth);
       ctx.lineTo((x + 1) * this.cellWidth, (y + 1) * this.cellWidth);
     }
     if (cell.walls[2]) {
-      ctx.moveTo((x) * this.cellWidth, (y + 1) * this.cellWidth);
+      ctx.moveTo(x * this.cellWidth, (y + 1) * this.cellWidth);
       ctx.lineTo((x + 1) * this.cellWidth, (y + 1) * this.cellWidth);
     }
     if (cell.walls[3]) {
-      ctx.moveTo((x) * this.cellWidth, (y) * this.cellWidth);
-      ctx.lineTo((x) * this.cellWidth, (y + 1) * this.cellWidth);
+      ctx.moveTo(x * this.cellWidth, y * this.cellWidth);
+      ctx.lineTo(x * this.cellWidth, (y + 1) * this.cellWidth);
     }
     ctx.stroke();
   }
 
-  private drawSpecialField(cell: MazeCell, ctx: CanvasRenderingContext2D, topLeftX: number, topLeftY: number) {
-    if (!this.maze) {
-      return;
-    }
-    const isBegin = cell.x == this.maze.begin.x && cell.y == this.maze.begin.y;
-    const isFinish = cell.x == this.maze.finish.x && cell.y == this.maze.finish.y;
-    const isPartOfWayToExit = this.maze.wayToExit.find(pos => cell.x == pos.x && cell.y == pos.y) !== undefined;
-    const isPlayer = cell.x == this.maze.player.x && cell.y == this.maze.player.y;
+  private drawTile(cell: MazeCell, ctx: CanvasRenderingContext2D, topLeftX: number, topLeftY: number) {
+    const image = new Image(512, 512);
+    image.src = this.getFilenameForFloorTile(cell.walls);
+    const x = Math.abs(topLeftX - cell.x);
+    const y = Math.abs(topLeftY - cell.y);
+    const that = this;
 
-    if (isPlayer) {
-      ctx.fillStyle = 'red';
-    } else if (isFinish) {
-      ctx.fillStyle = 'green';
-    } else if (isBegin) {
-      ctx.fillStyle = 'cyan';
-    } else if (isPartOfWayToExit) {
-      ctx.fillStyle = 'silver';
-    } else if (cell.visited) {
-      ctx.fillStyle = 'lightgray';
-    } else {
-      ctx.fillStyle = 'brown';
-    }
-    console.log('(cell.x - topLeftX)', (cell.x - topLeftX));
-    ctx.fillRect((cell.x - topLeftX) * this.cellWidth, (cell.y - topLeftY) * this.cellWidth, this.cellWidth, this.cellWidth);
+    image.addEventListener('load', function () {
+      void ctx.drawImage(image, x * that.cellWidth, y * that.cellWidth, that.cellWidth, that.cellWidth);
+    }, false);
   }
 
-  public drawRegion(center: MazeCell, radius: number): void {
-    const ctx = this.mazeArea.nativeElement.getContext('2d');
-    if (!ctx) {
-      throw new Error("Problem with ctx==null");
+  public getFilenameForSpecialFloorTile(cell: MazeCell): string {
+    if (cell.x == this._maze.player.x && cell.y == this._maze.player.y) {
+      return 'assets/player.png';
     }
-
-    const cellsToRedraw = this.maze.cells.filter(value => Math.abs(value.x - center.x) <= radius && Math.abs(value.y - center.y) <= radius);
-    // console.log('cellsToRedraw',cellsToRedraw.length);
-    // console.log('radius',radius);
-    let topLeftX = minBy(this.maze.cells, (cell) => cell.x)!.x;
-    let topLeftY = minBy(this.maze.cells, (cell) => cell.y)!.y;
-
-    for (let mazeKey in cellsToRedraw) {
-      const cell = cellsToRedraw[mazeKey];
-      this.drawSpecialField(cell, ctx, topLeftX, topLeftY);
-      this.drawWall(cell, ctx, topLeftX, topLeftY);
+    if (cell.x == this._maze.begin.x && cell.y == this._maze.begin.y) {
+      return 'assets/begin.png';
     }
+    if (cell.x == this._maze.finish.x && cell.y == this._maze.finish.y) {
+      return 'assets/exit.png';
+    }
+    return 'assets/empty.png';
   }
 
-  public drawMaze(): void {
-    if (this.radius <= 0) {
-      throw new Error("Radius too small");
+  public getFilenameForFloorTile(walls: boolean[]): string {
+    if (walls[0] && !walls[1] && walls[2] && !walls[3]) {
+      return 'assets/NS.png';
+    } else if (!walls[0] && walls[1] && !walls[2] && walls[3]) {
+      return 'assets/EW.png';
+      //
+    } else if (walls[0] && !walls[1] && !walls[2] && !walls[3]) {
+      return 'assets/N.png';
+    } else if (!walls[0] && walls[1] && !walls[2] && !walls[3]) {
+      return 'assets/E.png';
+    } else if (!walls[0] && !walls[1] && walls[2] && !walls[3]) {
+      return 'assets/S.png';
+    } else if (!walls[0] && !walls[1] && !walls[2] && walls[3]) {
+      return 'assets/W.png';
+      //
+    } else if (walls[0] && walls[1] && !walls[2] && !walls[3]) {
+      return 'assets/NE.png';
+    } else if (!walls[0] && walls[1] && walls[2] && !walls[3]) {
+      return 'assets/ES.png';
+    } else if (!walls[0] && !walls[1] && walls[2] && walls[3]) {
+      return 'assets/SW.png';
+    } else if (walls[0] && !walls[1] && !walls[2] && walls[3]) {
+      return 'assets/WN.png';
+    } else if (walls[0] && walls[1] && walls[2] && !walls[3]) {
+      return 'assets/NES.png';
+    } else if (!walls[0] && walls[1] && walls[2] && walls[3]) {
+      return 'assets/ESW.png';
+    } else if (walls[0] && !walls[1] && walls[2] && walls[3]) {
+      return 'assets/SWN.png';
+    } else if (walls[0] && walls[1] && !walls[2] && walls[3]) {
+      return 'assets/WNE.png';
     }
-    this.drawRegion(this.maze.player, this.radius);
+    return '';
+  }
+
+  public getStyleForCell(cell: MazeCell): string {
+    let rc = `object-fit: cover; width: ${this.cellWidth}px; height: ${this.cellWidth}px; grid-column: ${cell.x}; grid-row   : ${cell.y}; z-index: -1;`;
+    // console.log('rc', rc);
+    return rc;
   }
 
   public ngAfterViewInit(): void {
-    const mazeSize = this.mazeArea.nativeElement.getBoundingClientRect();
-    this.cellWidth = Math.floor(Math.min(mazeSize.width, mazeSize.height) / Math.sqrt(this.maze.cells.length));
-    this.drawMaze();
   }
 }
