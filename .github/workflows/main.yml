@@ -1,49 +1,28 @@
-  
-name: Node.js CI
+name: Build&Push Docker
 
-on: [push]
+on:
+  push:
+    branches:
+      - 'master'
 
 jobs:
-  build:
-
+  docker:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [12.x]
-
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm install
-    - run: npm run build --if-present --prod
-      env:
-        CI: true
-
-    - name: GitHub Pages
-      if: success()
-      uses: crazy-max/ghaction-github-pages@v1.2.5
-      with:
-        # GitHub repository where assets will be deployed (default current)
-        repo: # optional
-        # Git branch where assets will be deployed
-        target_branch: gh-pages # optional, default is gh-pages
-        # Create incremental commit instead of doing push force
-        keep_history: # optional, default is false
-        # Allow an empty commit to be created
-        allow_empty_commit: # optional, default is true
-        # Build directory to deploy
-        build_dir: dist/minion-family
-        # Commit author's name
-        committer_name: # optional
-        # Commit author's email
-        committer_email: # optional
-        # Commit message
-        commit_message: # optional
-        # Write the given domain name to the CNAME file
-        fqdn: # optional
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: wareagledocker/minion-generator:latest
+          file: Docker/Dockerfile
+      -
+        name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
