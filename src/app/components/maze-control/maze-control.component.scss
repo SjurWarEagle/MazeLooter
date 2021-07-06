@@ -1,0 +1,25 @@
+.player-level {
+  font-size: xxx-large;
+  color: blue;
+  grid-area: level;
+}
+
+.maze-zoomed {
+  grid-area: zoomed;
+}
+
+.player-loot {
+  grid-area: loot;
+}
+
+.minimap {
+  grid-area: minimap;
+}
+
+.everthing {
+  display: grid;
+  grid-template-areas:
+    "minimap minimap"
+    "zoomed loot"
+    "zoomed level";
+}

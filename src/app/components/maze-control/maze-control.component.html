@@ -1,2 +1,10 @@
-<!--<app-maze-display #mazedisplay [maze]="maze" [radius]="9999"></app-maze-display>-->
-<app-maze-zoomed #mazezoomed [maze]="zoomedMaze" [topLeft]="maze.player"></app-maze-zoomed>
+<div class="everthing">
+<div class="minimap">
+  <app-maze-display #mazedisplay [maze]="maze" [radius]="9999"></app-maze-display>
+</div>
+<div class="maze-zoomed">
+  <app-maze-zoomed #mazezoomed [maze]="zoomedMaze" [topLeft]="maze.player"></app-maze-zoomed>
+</div>
+<div class="player-level">{{dataHolderService.player.level}}</div>
+<div class="player-loot">x x o o o o TODO</div>
+</div>

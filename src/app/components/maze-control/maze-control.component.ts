@@ -4,6 +4,7 @@ import {MazeGeneratorService} from '../../../services/maze-generator.service';
 import {MazeDisplayComponent} from '../maze-display/maze-display.component';
 import {MazeCell} from '../../../types/maze-cell';
 import {MazeZoomedComponent} from '../maze-zoomed/maze-zoomed.component';
+import {DataHolderService} from '../../../services/data-holder.service';
 
 @Component({
   selector: 'app-maze-control',
@@ -23,7 +24,7 @@ export class MazeControlComponent implements OnInit {
   public maze: Maze = new Maze();
   private radius = 3;
 
-  constructor(private mazeGeneratorService: MazeGeneratorService) {
+  constructor(private mazeGeneratorService: MazeGeneratorService, public dataHolderService: DataHolderService) {
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -76,12 +77,15 @@ export class MazeControlComponent implements OnInit {
     }
   }
 
-  public ngOnInit(): void {
-    this.maze = this.mazeGeneratorService.generateMaze(15, 15);
-    this.updateAfterPlayerMovement(this.maze.player);
-  }
-
   private checkIfPlayerReachedExit(): boolean {
     return this.maze.player.x === this.maze.finish.x && this.maze.player.x === this.maze.finish.x;
   }
+
+  public ngOnInit(): void {
+    const sideLengthMaze = 70 + this.dataHolderService.player.level * 2;
+    this.maze = this.mazeGeneratorService.generateMaze(sideLengthMaze, sideLengthMaze);
+    this.updateAfterPlayerMovement(this.maze.player);
+  }
+
+
 }
