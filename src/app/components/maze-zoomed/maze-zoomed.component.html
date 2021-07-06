@@ -7,7 +7,7 @@
         'grid-template-rows': 'repeat(' + shiftY + ', '+cellWidth+'px)'
 
       }">
-        <span *ngFor="let cell of _maze.cells">
+        <span *ngFor="let cell of localMaze.cells">
           <img [style]="getStyleForCell(cell)" class="maze-cell-special"
                [src]="getFilenameForSpecialFloorTile(cell)"/>
         </span>
@@ -21,7 +21,7 @@
         'grid-template-rows': 'repeat(' + shiftY + ', '+cellWidth+'px)'
 
       }">
-        <span *ngFor="let cell of _maze.cells">
+        <span *ngFor="let cell of localMaze.cells">
           <img [style]="getStyleForCell(cell)" class="maze-cell"
                [src]="getFilenameForFloorTile(cell.walls)"/>
         </span>

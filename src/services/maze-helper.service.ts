@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
-import {MazeCell} from "../types/maze-cell";
-import {Maze} from "../types/maze";
+import {MazeCell} from '../types/maze-cell';
+import {Maze} from '../types/maze';
 
 @Injectable({
   providedIn: 'root'
@@ -16,16 +16,16 @@ export class MazeHelperService {
         maze.cells.push(new MazeCell(x, y));
       }
     }
-    const cell = maze.cells.find(value => value.x == 0 && value.y == 0);
+    const cell = maze.cells.find(value => value.x === 0 && value.y === 0);
     if (!cell) {
-      throw new Error("No Start found");
+      throw new Error('No Start found');
     }
 
     maze.begin = cell;
     maze.player = new MazeCell(maze.begin.x, maze.begin.y);
   }
 
-  public findPossibleDirections(currentCell: MazeCell, maze: Maze, width: number, height: number) {
+  public findPossibleDirections(currentCell: MazeCell, maze: Maze, width: number, height: number): MazeCell[] {
     const rc: MazeCell[] = [];
 
     let index = this.getIndex(currentCell.x + 1, currentCell.y, width, height);

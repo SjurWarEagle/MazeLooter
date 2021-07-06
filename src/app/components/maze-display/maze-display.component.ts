@@ -1,6 +1,6 @@
 import {Component, ElementRef, Input, AfterViewInit, ViewChild} from '@angular/core';
-import {MazeCell} from "../../../types/maze-cell";
-import {Maze} from "../../../types/maze";
+import {MazeCell} from '../../../types/maze-cell';
+import {Maze} from '../../../types/maze';
 
 @Component({
   selector: 'app-maze-display',
@@ -13,10 +13,10 @@ export class MazeDisplayComponent implements AfterViewInit {
   @Input()
   public maze: Maze = new Maze();
 
-  public showSolution=true;
+  public showSolution = true;
 
   @Input()
-  public radius: number = 0;
+  public radius = 0;
 
   @ViewChild('mazearea', {static: true})
   // @ts-ignore
@@ -28,7 +28,7 @@ export class MazeDisplayComponent implements AfterViewInit {
   constructor() {
   }
 
-  private drawWall(cell: MazeCell, ctx: CanvasRenderingContext2D) {
+  private drawWall(cell: MazeCell, ctx: CanvasRenderingContext2D): void {
     ctx.fillStyle = 'black';
     if (cell.walls[0]) {
       ctx.moveTo(cell.x * this.cellWidth, cell.y * this.cellWidth);
@@ -49,14 +49,14 @@ export class MazeDisplayComponent implements AfterViewInit {
     ctx.stroke();
   }
 
-  private drawSpecialField(cell: MazeCell, ctx: CanvasRenderingContext2D) {
+  private drawSpecialField(cell: MazeCell, ctx: CanvasRenderingContext2D): void {
     if (!this.maze) {
       return;
     }
-    const isBegin = cell.x == this.maze.begin.x && cell.y == this.maze.begin.y;
-    const isFinish = cell.x == this.maze.finish.x && cell.y == this.maze.finish.y;
-    const isPartOfWayToExit = this.maze.wayToExit.find(pos => cell.x == pos.x && cell.y == pos.y) !== undefined;
-    const isPlayer = cell.x == this.maze.player.x && cell.y == this.maze.player.y;
+    const isBegin = cell.x === this.maze.begin.x && cell.y === this.maze.begin.y;
+    const isFinish = cell.x === this.maze.finish.x && cell.y === this.maze.finish.y;
+    const isPartOfWayToExit = this.maze.wayToExit.find(pos => cell.x === pos.x && cell.y === pos.y) !== undefined;
+    const isPlayer = cell.x === this.maze.player.x && cell.y === this.maze.player.y;
 
     if (isPlayer) {
       ctx.fillStyle = 'red';
@@ -77,14 +77,13 @@ export class MazeDisplayComponent implements AfterViewInit {
   public drawRegion(center: MazeCell, radius: number): void {
     const ctx = this.mazeArea.nativeElement.getContext('2d');
     if (!ctx) {
-      throw new Error("Problem with ctx==null");
+      throw new Error('Problem with ctx==null');
     }
 
     const cellsToRedraw = this.maze.cells.filter(value => value.x <= center.x + radius && value.x >= center.x - radius && value.y <= center.y + radius && value.y >= center.y - radius);
-    for (let mazeKey in cellsToRedraw) {
-      const cell = cellsToRedraw[mazeKey];
-      this.drawSpecialField(cell, ctx);
-      this.drawWall(cell, ctx);
+    for (const cellsToRedrawItem of cellsToRedraw) {
+      this.drawSpecialField(cellsToRedrawItem, ctx);
+      this.drawWall(cellsToRedrawItem, ctx);
     }
   }
 

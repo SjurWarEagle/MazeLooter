@@ -1,7 +1,7 @@
 import {Component, ElementRef, Input, AfterViewInit, ViewChild} from '@angular/core';
-import {MazeCell} from "../../../types/maze-cell";
-import {Maze} from "../../../types/maze";
-import {minBy, maxBy} from "lodash";
+import {MazeCell} from '../../../types/maze-cell';
+import {Maze} from '../../../types/maze';
+import {minBy, maxBy} from 'lodash';
 
 @Component({
   selector: 'app-maze-zoomed',
@@ -18,13 +18,13 @@ export class MazeZoomedComponent implements AfterViewInit {
 
   @Input()
   public set maze(value: Maze) {
-    this._maze = value;
+    this.localMaze = value;
     if (value && value.cells && value.cells.length > 1) {
 
-      this.maxX = maxBy(this._maze.cells, (v) => v.x)!.x;
-      this.minX = minBy(this._maze.cells, (v) => v.x)!.x;
-      this.maxY = maxBy(this._maze.cells, (v) => v.y)!.y;
-      this.minY = minBy(this._maze.cells, (v) => v.y)!.y;
+      this.maxX = maxBy(this.localMaze.cells, (v) => v.x)!.x;
+      this.minX = minBy(this.localMaze.cells, (v) => v.x)!.x;
+      this.maxY = maxBy(this.localMaze.cells, (v) => v.y)!.y;
+      this.minY = minBy(this.localMaze.cells, (v) => v.y)!.y;
       this.shiftX = Math.abs(this.maxX - this.minX) + 1;
       this.shiftY = Math.abs(this.maxY - this.minY) + 1;
     }
@@ -33,13 +33,13 @@ export class MazeZoomedComponent implements AfterViewInit {
 
   public cellWidth = 64;
 
-  public _maze: Maze = new Maze();
+  public localMaze: Maze = new Maze();
 
   @Input()
   public topLeft: MazeCell = new MazeCell(0, 0);
 
   @Input()
-  public radius: number = 0;
+  public radius = 0;
 
   @ViewChild('mazeareaZoomed', {static: true})
   // @ts-ignore
@@ -51,7 +51,7 @@ export class MazeZoomedComponent implements AfterViewInit {
   constructor() {
   }
 
-  private drawWall(cell: MazeCell, ctx: CanvasRenderingContext2D, topLeftX: number, topLeftY: number) {
+  private drawWall(cell: MazeCell, ctx: CanvasRenderingContext2D, topLeftX: number, topLeftY: number): void {
     ctx.fillStyle = 'black';
     const x = Math.abs(topLeftX - cell.x);
     const y = Math.abs(topLeftY - cell.y);
@@ -75,26 +75,26 @@ export class MazeZoomedComponent implements AfterViewInit {
     ctx.stroke();
   }
 
-  private drawTile(cell: MazeCell, ctx: CanvasRenderingContext2D, topLeftX: number, topLeftY: number) {
+  private drawTile(cell: MazeCell, ctx: CanvasRenderingContext2D, topLeftX: number, topLeftY: number): void {
     const image = new Image(512, 512);
     image.src = this.getFilenameForFloorTile(cell.walls);
     const x = Math.abs(topLeftX - cell.x);
     const y = Math.abs(topLeftY - cell.y);
     const that = this;
 
-    image.addEventListener('load', function () {
+    image.addEventListener('load', () => {
       void ctx.drawImage(image, x * that.cellWidth, y * that.cellWidth, that.cellWidth, that.cellWidth);
     }, false);
   }
 
   public getFilenameForSpecialFloorTile(cell: MazeCell): string {
-    if (cell.x == this._maze.player.x && cell.y == this._maze.player.y) {
+    if (cell.x === this.localMaze.player.x && cell.y === this.localMaze.player.y) {
       return 'assets/player.png';
     }
-    if (cell.x == this._maze.begin.x && cell.y == this._maze.begin.y) {
+    if (cell.x === this.localMaze.begin.x && cell.y === this.localMaze.begin.y) {
       return 'assets/begin.png';
     }
-    if (cell.x == this._maze.finish.x && cell.y == this._maze.finish.y) {
+    if (cell.x === this.localMaze.finish.x && cell.y === this.localMaze.finish.y) {
       return 'assets/exit.png';
     }
     return 'assets/empty.png';
@@ -136,7 +136,7 @@ export class MazeZoomedComponent implements AfterViewInit {
   }
 
   public getStyleForCell(cell: MazeCell): string {
-    let rc = `object-fit: cover; width: ${this.cellWidth}px; height: ${this.cellWidth}px; grid-column: ${cell.x}; grid-row   : ${cell.y}; z-index: -1;`;
+    const rc = `object-fit: cover; width: ${this.cellWidth}px; height: ${this.cellWidth}px; grid-column: ${cell.x}; grid-row   : ${cell.y}; z-index: -1;`;
     // console.log('rc', rc);
     return rc;
   }

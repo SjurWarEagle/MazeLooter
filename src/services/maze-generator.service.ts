@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
-import {MazeCell} from "../types/maze-cell";
-import {MazeHelperService} from "./maze-helper.service";
-import {Maze} from "../types/maze";
+import {MazeCell} from '../types/maze-cell';
+import {MazeHelperService} from './maze-helper.service';
+import {Maze} from '../types/maze';
 
 @Injectable({
   providedIn: 'root'
@@ -16,27 +16,27 @@ export class MazeGeneratorService {
     const maze: Maze = new Maze();
 
     this.mazeHelperService.initEmptyMazeArea(maze, width, height);
-    maze.finish = maze.cells.find(value => value.x == width - 1 && value.y == height - 1)!;
+    maze.finish = maze.cells.find(value => value.x === width - 1 && value.y === height - 1)!;
     if (!maze.finish) {
-      throw new Error("no finish point found");
+      throw new Error('no finish point found');
     }
-    const currentCell: MazeCell | undefined = maze.cells.find(value => value.x == maze.begin.x && value.y == maze.begin.y);
+    const currentCell: MazeCell | undefined = maze.cells.find(value => value.x === maze.begin.x && value.y === maze.begin.y);
     if (!currentCell) {
-      throw new Error("no starting point found");
+      throw new Error('no starting point found');
     }
 
     this.walkMaze(maze, currentCell, width, height);
     return maze;
   }
 
-  private storeWayToExit(maze: Maze, currentCell: MazeCell) {
-    if (currentCell.x == maze.finish.x && currentCell.y == maze.finish.y) {
-      maze.wayToExit=[];
+  private storeWayToExit(maze: Maze, currentCell: MazeCell): void {
+    if (currentCell.x === maze.finish.x && currentCell.y === maze.finish.y) {
+      maze.wayToExit = [];
       this.cellStack.forEach(value => {
         // if (!maze.wayToExit.find(value1 => value1.x==value.x&&value1.y==value.y)){
-          maze.wayToExit.push(value)
+        maze.wayToExit.push(value);
         // }
-      })
+      });
     }
   }
 
@@ -63,7 +63,7 @@ export class MazeGeneratorService {
     }
   }
 
-  removeWalls(currentCell: MazeCell, targetCell: MazeCell) {
+  removeWalls(currentCell: MazeCell, targetCell: MazeCell): void {
 
     if (currentCell.x < targetCell.x) {
       currentCell.walls[1] = false;
