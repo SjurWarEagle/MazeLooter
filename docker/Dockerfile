@@ -4,8 +4,10 @@ RUN mkdir -p /project/
 RUN apt update
 RUN apt upgrade -y
 
-RUN git clone https://github.com/SjurWarEagle/MazeLooter
 WORKDIR /project
+RUN git clone https://github.com/SjurWarEagle/MazeLooter .
 RUN npm install
+RUN pwd
+RUN ls -al
 RUN npm run build
 ENTRYPOINT ["npm", "run", "start"]
