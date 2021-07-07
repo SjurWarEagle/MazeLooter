@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {MazeCell} from '../types/maze-cell';
 import {MazeHelperService} from './maze-helper.service';
 import {Maze} from '../types/maze';
+import {MazeLoot} from '../types/maze-loot';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +26,8 @@ export class MazeGeneratorService {
       throw new Error('no starting point found');
     }
 
-    this.walkMaze(maze, currentCell, width, height);
+    this.cellStack.push(currentCell);
+    this.walkMaze(maze, width, height);
     return maze;
   }
 
@@ -40,27 +42,26 @@ export class MazeGeneratorService {
     }
   }
 
-  private walkMaze(maze: Maze, currentCell: MazeCell, width: number, height: number): void {
+  private walkMaze(maze: Maze, width: number, height: number): void {
+    while (this.cellStack.length !== 0) {
+      const currentCell = this.cellStack.pop()!;
+      this.storeWayToExit(maze, currentCell);
+      const selectedTarget = this.getRandomNeighbour(currentCell, maze, width, height);
 
-    currentCell.visited = true;
+      if (selectedTarget) {
+        this.cellStack.push(currentCell);
+        this.removeWalls(currentCell, selectedTarget);
+        selectedTarget.visited = true;
+        this.cellStack.push(selectedTarget);
+      }
+    }
+  }
 
+  private getRandomNeighbour(currentCell: MazeCell, maze: Maze, width: number, height: number): MazeCell {
     const directions = this.mazeHelperService.findPossibleDirections(currentCell, maze, width, height);
 
     const rnd = Math.floor(Math.random() * directions.length);
-    const selectedTarget = directions[rnd];
-    if (selectedTarget) {
-      if (!selectedTarget.visited) {
-        this.cellStack.push(selectedTarget);
-        this.removeWalls(currentCell, selectedTarget);
-        this.storeWayToExit(maze, currentCell);
-        this.walkMaze(maze, selectedTarget, width, height);
-      }
-    } else {
-      const oldCell = this.cellStack.pop();
-      if (oldCell) {
-        this.walkMaze(maze, oldCell, width, height);
-      }
-    }
+    return directions[rnd];
   }
 
   removeWalls(currentCell: MazeCell, targetCell: MazeCell): void {
@@ -83,4 +84,22 @@ export class MazeGeneratorService {
     }
   }
 
+  distributeLoot(maze: Maze, cnt: number, sideLengthMaze: number): void {
+    for (let i = 0; i < cnt; i++) {
+      const lootX = Math.floor(Math.random() * sideLengthMaze);
+      const lootY = Math.floor(Math.random() * sideLengthMaze);
+      const loot = new MazeLoot(lootX, lootY);
+
+      const alreadyExists = maze.loot.find(cell => cell.x === loot.x && cell.y === loot.y);
+      const tooCloseToOtherLoot = maze.loot.find(cell => Math.abs(cell.x - loot.x) + Math.abs(cell.y - loot.y) < sideLengthMaze / 4);
+      const isPartOfIdealPath = maze.wayToExit.find(cell => cell.x === loot.x && cell.y === loot.y);
+      const isSpecialField = (maze.finish.x === loot.x && maze.finish.y === loot.y)
+        || (maze.begin.x === loot.x && maze.begin.y === loot.y);
+      if (!alreadyExists && !isPartOfIdealPath && !tooCloseToOtherLoot && !isSpecialField) {
+        maze.loot.push(loot);
+      } else {
+        i--;
+      }
+    }
+  }
 }

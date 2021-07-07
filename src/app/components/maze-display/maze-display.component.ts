@@ -57,11 +57,14 @@ export class MazeDisplayComponent implements AfterViewInit {
     const isFinish = cell.x === this.maze.finish.x && cell.y === this.maze.finish.y;
     const isPartOfWayToExit = this.maze.wayToExit.find(pos => cell.x === pos.x && cell.y === pos.y) !== undefined;
     const isPlayer = cell.x === this.maze.player.x && cell.y === this.maze.player.y;
+    const isLoot = this.maze.loot.find(pos => cell.x === pos.x && cell.y === pos.y) !== undefined;
 
     if (isPlayer) {
       ctx.fillStyle = 'red';
     } else if (isFinish) {
       ctx.fillStyle = 'green';
+    } else if (isLoot) {
+      ctx.fillStyle = 'orange';
     } else if (isBegin) {
       ctx.fillStyle = 'cyan';
     } else if (isPartOfWayToExit && this.showSolution) {

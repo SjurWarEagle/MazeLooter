@@ -58,8 +58,10 @@ export class MazeControlComponent implements OnInit {
 
 
   private updateAfterPlayerMovement(playerCell: MazeCell): void {
-    if (this.checkIfPlayerReachedExit()) {
-      console.log('done');
+    if (this.checkIfPlayerCollectsLoot()) {
+    } else if (this.checkIfPlayerReachedExit()) {
+      this.dataHolderService.player.level++;
+      this.restartNewMaze();
     } else {
       requestAnimationFrame(() => {
         if (this.mazeDisplay) {
@@ -68,22 +70,51 @@ export class MazeControlComponent implements OnInit {
         const center = this.maze.player;
         // this.mazeZoomed.drawMaze();
         const cellsToRedraw = this.maze.cells.filter(value => value.x <= center.x + this.radius && value.x >= center.x - this.radius && value.y <= center.y + this.radius && value.y >= center.y - this.radius);
-        this.zoomedMaze = new Maze();
-        this.zoomedMaze.player = this.maze.player;
-        this.zoomedMaze.begin = this.maze.begin;
-        this.zoomedMaze.finish = this.maze.finish;
-        this.zoomedMaze.cells = cellsToRedraw;
+        this.cloneMazeSection(cellsToRedraw);
       });
     }
   }
 
+  private cloneMazeSection(cellsToRedraw: MazeCell[]): void {
+    this.zoomedMaze = new Maze();
+    this.zoomedMaze.player = this.maze.player;
+    this.zoomedMaze.begin = this.maze.begin;
+    this.zoomedMaze.finish = this.maze.finish;
+    this.zoomedMaze.loot = this.maze.loot;
+    this.zoomedMaze.cells = cellsToRedraw;
+  }
+
+  private checkIfPlayerCollectsLoot(): boolean {
+    const existingLoot = this.maze.loot.find(loot => loot.x === this.maze.player.x && loot.y === this.maze.player.y && !loot.collected);
+    if (existingLoot) {
+      console.log('found loot');
+      existingLoot.collected = true;
+      this.dataHolderService.player.cntLoot++;
+      return true;
+    }
+    return false;
+  }
+
   private checkIfPlayerReachedExit(): boolean {
-    return this.maze.player.x === this.maze.finish.x && this.maze.player.x === this.maze.finish.x;
+    return this.maze.player.x === this.maze.finish.x && this.maze.player.y === this.maze.finish.y;
+  }
+
+  private restartNewMaze(): void {
+    const sideLengthMaze = 3 + this.dataHolderService.player.level * 2;
+    this.maze = this.mazeGeneratorService.generateMaze(sideLengthMaze, sideLengthMaze);
+    this.mazeGeneratorService.distributeLoot(this.maze, 2, 4);
+
+    const center = this.maze.player;
+    // this.mazeZoomed.drawMaze();
+    const cellsToRedraw = this.maze.cells.filter(value => value.x <= center.x + this.radius && value.x >= center.x - this.radius && value.y <= center.y + this.radius && value.y >= center.y - this.radius);
+    this.cloneMazeSection(cellsToRedraw);
   }
 
   public ngOnInit(): void {
-    const sideLengthMaze = 70 + this.dataHolderService.player.level * 2;
-    this.maze = this.mazeGeneratorService.generateMaze(sideLengthMaze, sideLengthMaze);
+
+    this.restartNewMaze();
+    // this.maze = this.mazeGeneratorService.generateMaze(sideLengthMaze, sideLengthMaze);
+    // this.mazeGeneratorService.distributeLoot(this.maze, 2 + this.dataHolderService.player.level, sideLengthMaze);
     this.updateAfterPlayerMovement(this.maze.player);
   }
 

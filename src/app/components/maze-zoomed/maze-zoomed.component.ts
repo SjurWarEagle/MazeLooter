@@ -97,6 +97,9 @@ export class MazeZoomedComponent implements AfterViewInit {
     if (cell.x === this.localMaze.finish.x && cell.y === this.localMaze.finish.y) {
       return 'assets/exit.png';
     }
+    if (this.localMaze.loot.find(loot => loot.x === cell.x && cell.y === loot.y && !loot.collected)) {
+      return 'assets/loot.png';
+    }
     return 'assets/empty.png';
   }
 

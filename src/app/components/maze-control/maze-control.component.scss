@@ -9,15 +9,20 @@
 }
 
 .player-loot {
+  font-size: xxx-large;
+  color: blue;
   grid-area: loot;
+  justify-items: left;
 }
 
 .minimap {
   grid-area: minimap;
+  display: none;
 }
 
 .everthing {
   display: grid;
+  grid-template-columns: auto 1fr;
   grid-template-areas:
     "minimap minimap"
     "zoomed loot"
