@@ -13,12 +13,9 @@ RUN git clone https://github.com/SjurWarEagle/MazeLooter .
 RUN npm install --no-audi && \
     npm run build
 
-
 ADD docker/nginx/nginx.conf /etc/nginx/conf.d/default.conf
 RUN rm -rf /etc/apt/apt.conf.d/90nginx
-
-
-EXPOSE 90
+EXPOSE 95
 
 STOPSIGNAL SIGTERM
 
