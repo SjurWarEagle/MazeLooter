@@ -15,11 +15,9 @@ RUN npm install --no-audi && \
 
 ADD docker/nginx/nginx.conf /etc/nginx/conf.d/default.conf
 RUN rm -rf /etc/apt/apt.conf.d/90nginx
+RUN service nginx restart
 EXPOSE 95
 
 STOPSIGNAL SIGTERM
 
-ADD docker/start.sh /
-RUN chmod +x /start.sh
-
-CMD ["/start.sh"]
+CMD ["nginx", "-g", "daemon off;"]
