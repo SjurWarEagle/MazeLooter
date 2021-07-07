@@ -21,7 +21,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: wareagledocker/minion-generator:latest
+          tags: wareagledocker/maze-looter:latest
           file: Docker/Dockerfile
       -
         name: Image digest
