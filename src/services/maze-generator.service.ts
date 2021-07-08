@@ -98,7 +98,7 @@ export class MazeGeneratorService {
       const loot = new MazeLoot(lootX, lootY);
 
       const alreadyExists = maze.loot.find(cell => cell.x === loot.x && cell.y === loot.y);
-      const tooCloseToOtherLoot = maze.loot.find(cell => Math.abs(cell.x - loot.x) + Math.abs(cell.y - loot.y) < sideLengthMaze / 4);
+      const tooCloseToOtherLoot = maze.loot.find(cell => Math.abs(cell.x - loot.x) + Math.abs(cell.y - loot.y) < sideLengthMaze);
       const isPartOfIdealPath = maze.wayToExit.find(cell => cell.x === loot.x && cell.y === loot.y);
       const isSpecialField = (maze.finish.x === loot.x && maze.finish.y === loot.y)
         || (maze.begin.x === loot.x && maze.begin.y === loot.y);

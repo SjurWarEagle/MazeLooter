@@ -1,15 +1,15 @@
-<div class="everthing" #everything  (swipedown)="moveDown()" (swipeup)="moveUp()" (swipeleft)="moveLeft()" (swiperight)="moveRight()">
+<div class="everything" #everything  (swipedown)="moveDown()" (swipeup)="moveUp()" (swipeleft)="moveLeft()" (swiperight)="moveRight()">
   <div class="minimap">
     <app-maze-display #mazedisplay [maze]="maze" [radius]="9999"></app-maze-display>
   </div>
   <div class="maze-zoomed" >
     <app-maze-zoomed #mazezoomed [maze]="zoomedMaze" [topLeft]="maze.player"></app-maze-zoomed>
   </div>
+<!--  <span class="player-loot">-->
+<!--  </span>-->
+  <span class="more">
   <div class="player-level">Level: {{dataHolderService.player.level}}</div>
-  <span class="player-loot">
-    <img src="assets/loot.png" alt="loot" width="40" height="40">x{{dataHolderService.player.cntLoot}}
-  </span>
-  <span class="about">
-    <a routerLink="/about"><img src="assets/question.png" border="0" width="32"/></a>
+    <div class="player-loot"><img src="assets/loot.png" alt="loot" width="40" height="40">x{{dataHolderService.player.cntLoot}}</div>
+    <a routerLink="/about"><img src="assets/question.png" border="0" width="24"/></a>
   </span>
 </div>

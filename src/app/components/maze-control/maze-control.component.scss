@@ -8,14 +8,12 @@
 .maze-zoomed {
   width: 100%;
   height: 100%;
-  grid-area: zoomed;
   padding: 1em;
 }
 
 .player-loot {
   font-size: xxx-large;
   color: darkgreen;
-  grid-area: loot;
   white-space: nowrap;
 }
 
@@ -25,35 +23,42 @@
 }
 
 .about {
-  grid-area: about;
   justify-self: center;
 }
 
+.more {
+  grid-area: more;
+  justify-self: center;
+  flex-direction: column;
+  display: flex;
+}
+
 @media only screen and (orientation: portrait) {
-  .everthing {
+  .everything {
+    margin: 0;
+    padding: 0;
+
     height: 100%;
-    background-color: #c0a4a4;
+    width: 100vw;
     display: grid;
-    //grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto 1fr 1fr 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-columns: auto;
     grid-template-areas:
     "zoomed"
-    "loot"
-    "level"
-    "about"
+    "more"
   }
 }
 
 @media only screen and (orientation: landscape) {
-  .everthing {
+  .everything {
+    margin: 0;
+    padding: 0;
+
     height: 100%;
-    background-color: lightgray;
     display: grid;
-    grid-template-columns: auto 1fr 1fr;
-    //grid-template-rows: 1fr 1fr;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto;
     grid-template-areas:
-    "zoomed loot"
-    "zoomed level"
-    "zoomed about"
+    "zoomed more"
   }
 }
