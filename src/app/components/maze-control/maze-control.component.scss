@@ -26,6 +26,10 @@
   display: none;
 }
 
+.about {
+  grid-area: about;
+}
+
 @media only screen and (orientation: portrait) {
   .everthing {
     height: 100%;
@@ -34,8 +38,8 @@
     grid-template-columns: 1fr;
     grid-template-rows: auto min-content;
     grid-template-areas:
-    "zoomed zoomed"
-    "loot level";
+    "zoomed zoomed zoomed"
+    "loot level about";
   }
 }
 
@@ -48,6 +52,7 @@
     grid-template-rows: 1fr;
     grid-template-areas:
     "zoomed loot"
-    "zoomed level";
+    "zoomed level"
+    "zoomed about";
   }
 }

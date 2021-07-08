@@ -13,6 +13,7 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {FormsModule} from '@angular/forms';
 import * as Hammer from 'hammerjs';
+import { AboutComponent } from './components/about/about.component';
 
 @Injectable()
 export class HammerConfig extends HammerGestureConfig {
@@ -27,7 +28,8 @@ export class HammerConfig extends HammerGestureConfig {
     MazeDisplayComponent,
     MazeZoomedComponent,
     IntroComponent,
-    MazeControlComponent
+    MazeControlComponent,
+    AboutComponent
   ],
   imports: [
     BrowserModule,
