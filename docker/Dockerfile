@@ -11,7 +11,8 @@ RUN apt update -y && \
 WORKDIR /project
 RUN git clone https://github.com/SjurWarEagle/MazeLooter .
 RUN npm install --no-audi && \
-    npm run build
+    npm run build:prod && \
+    rm -r node_modules
 
 ADD docker/nginx/nginx.conf /etc/nginx/conf.d/default.conf
 RUN rm -rf /etc/apt/apt.conf.d/90nginx
