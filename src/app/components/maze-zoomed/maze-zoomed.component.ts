@@ -112,7 +112,7 @@ export class MazeZoomedComponent {
       return 'assets/none.png';
     }
     console.log(walls);
-    return '???';
+    return 'assets/none.png';
   }
 
   public getStyleForCell(cell: MazeCell): string {
