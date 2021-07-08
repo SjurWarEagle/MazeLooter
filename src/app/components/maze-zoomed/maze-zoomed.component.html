@@ -3,28 +3,35 @@
   <div class="specials">
     <div class="maze-area" [ngStyle]="
       {
-        'grid-template-columns': 'repeat(' + shiftX + ', '+cellWidth+'px)',
-        'grid-template-rows': 'repeat(' + shiftY + ', '+cellWidth+'px)'
-
-      }">
-        <span *ngFor="let cell of localMaze.cells">
-          <img [style]="getStyleForCell(cell)" class="maze-cell-special"
-               [src]="getFilenameForSpecialFloorTile(cell)"/>
-        </span>
+        'grid-template-columns': 'repeat(' + (shiftX) + ', '+cellWidth+'px)',
+        'grid-template-rows': 'repeat(' + (shiftY) + ', '+cellWidth+'px)'
+      }"
+    >
+      <img *ngFor="let cell of localMaze.cells"
+           [style]="getStyleForCell(cell)"
+           [src]="getFilenameForSpecialFloorTile(cell)"
+           alt="{{cell.x}}/{{cell.y}}"
+           class="maze-cell-special"
+      />
     </div>
   </div>
 
   <div class="map">
-    <div class="maze-area" [ngStyle]="
+    <div class="maze-area"
+         #mazeareaZoomed
+         [ngStyle]="
       {
-        'grid-template-columns': 'repeat(' + shiftX + ', '+cellWidth+'px)',
-        'grid-template-rows': 'repeat(' + shiftY + ', '+cellWidth+'px)'
-
-      }">
-        <span *ngFor="let cell of localMaze.cells">
-          <img [style]="getStyleForCell(cell)" class="maze-cell"
-               [src]="getFilenameForFloorTile(cell.walls)"/>
-        </span>
+        'grid-template-columns': 'repeat(' + (shiftX) + ', '+cellWidth+'px)',
+        'grid-template-rows': 'repeat(' + (shiftY) + ', '+cellWidth+'px)'
+      }"
+    >
+      <img *ngFor="let cell of localMaze.cells"
+           [style]="getStyleForCell(cell)"
+           [src]="getFilenameForFloorTile(cell.walls)"
+           alt="{{cell.x}}/{{cell.y}}"
+           title="{{cell.x}}/{{cell.y}}"
+           class="maze-cell"
+      />
     </div>
   </div>
 

@@ -1,5 +1,7 @@
 .maze-area {
   display: grid;
+  height: 100%;
+  width: 100%;
   gap: 0;
 }
 
@@ -17,8 +19,11 @@
 }
 
 .overall {
+  //height: 100%;
+  width: 100%;
   display: grid;
   grid-template-areas: "all";
+  justify-items: left;
 }
 
 .specials {

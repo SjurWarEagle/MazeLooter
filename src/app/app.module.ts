@@ -1,5 +1,6 @@
-import {BrowserModule} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
+/* tslint:disable:object-literal-key-quotes no-angle-bracket-type-assertion */
+import {BrowserModule, HAMMER_GESTURE_CONFIG, HammerGestureConfig, HammerModule} from '@angular/platform-browser';
+import {Injectable, NgModule} from '@angular/core';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
@@ -11,6 +12,14 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {FormsModule} from '@angular/forms';
+import * as Hammer from 'hammerjs';
+
+@Injectable()
+export class HammerConfig extends HammerGestureConfig {
+  overrides = <any> {
+    'swipe': {direction: Hammer.DIRECTION_ALL}
+  };
+}
 
 @NgModule({
   declarations: [
@@ -26,10 +35,21 @@ import {FormsModule} from '@angular/forms';
     BrowserAnimationsModule,
     MatCheckboxModule,
     MatButtonToggleModule,
+    HammerModule,
     FormsModule
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HAMMER_GESTURE_CONFIG,
+      useClass: HammerConfig
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {
+  constructor() {
+    const hammertime = new Hammer(document.body);
+
+    hammertime.get('swipe').set({direction: Hammer.DIRECTION_ALL});
+  }
 }

@@ -1,18 +1,24 @@
 .player-level {
+  padding: 1em;
   font-size: xxx-large;
-  color: blue;
+  color: darkgreen;
   grid-area: level;
+  white-space: nowrap;
 }
 
 .maze-zoomed {
+  width: 100%;
+  height: 100%;
   grid-area: zoomed;
+  padding: 1em;
 }
 
 .player-loot {
+  padding: 1em;
   font-size: xxx-large;
-  color: blue;
+  color: darkgreen;
   grid-area: loot;
-  justify-items: left;
+  white-space: nowrap;
 }
 
 .minimap {
@@ -20,11 +26,28 @@
   display: none;
 }
 
-.everthing {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-template-areas:
-    "minimap minimap"
+@media only screen and (orientation: portrait) {
+  .everthing {
+    height: 100%;
+    background-color: #bbbbbb;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto min-content;
+    grid-template-areas:
+    "zoomed zoomed"
+    "loot level";
+  }
+}
+
+@media only screen and (orientation: landscape) {
+  .everthing {
+    height: 100%;
+    background-color: lightgray;
+    display: grid;
+    grid-template-columns: auto min-content;
+    grid-template-rows: 1fr;
+    grid-template-areas:
     "zoomed loot"
     "zoomed level";
+  }
 }

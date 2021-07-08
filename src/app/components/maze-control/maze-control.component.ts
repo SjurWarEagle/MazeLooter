@@ -5,6 +5,7 @@ import {MazeDisplayComponent} from '../maze-display/maze-display.component';
 import {MazeCell} from '../../../types/maze-cell';
 import {MazeZoomedComponent} from '../maze-zoomed/maze-zoomed.component';
 import {DataHolderService} from '../../../services/data-holder.service';
+import {ElementRef} from '@angular/core';
 
 @Component({
   selector: 'app-maze-control',
@@ -18,11 +19,17 @@ export class MazeControlComponent implements OnInit {
   @ViewChild('mazedisplay', {static: true})
   public mazeDisplay: MazeDisplayComponent = new MazeDisplayComponent();
 
+  @ViewChild('everything', {static: true})
+  // @ts-ignore
+  public everything: ElementRef = undefined;
+
   @ViewChild('mazezoomed', {static: true})
   public mazeZoomed: MazeZoomedComponent = new MazeZoomedComponent();
 
   public maze: Maze = new Maze();
   private radius = 3;
+  // @ts-ignore
+  private hammerManager: HammerManager = undefined;
 
   constructor(private mazeGeneratorService: MazeGeneratorService, public dataHolderService: DataHolderService) {
   }
@@ -30,32 +37,47 @@ export class MazeControlComponent implements OnInit {
   @HostListener('window:keydown', ['$event'])
   public handleKeyDown(event: KeyboardEvent): void {
     if ((event.key === 'ArrowDown') || (event.key === 's') || (event.key === '2')) {
-      const playerCell: MazeCell = this.maze.cells.find(value => value.x === this.maze.player.x && value.y === this.maze.player.y)!;
-      if (playerCell && !playerCell.walls[2]) {
-        this.maze.player.y++;
-        this.updateAfterPlayerMovement(playerCell);
-      }
+      this.moveDown();
     } else if ((event.key === 'ArrowUp') || (event.key === 'w') || (event.key === '8')) {
-      const playerCell: MazeCell = this.maze.cells.find(value => value.x === this.maze.player.x && value.y === this.maze.player.y)!;
-      if (playerCell && !playerCell.walls[0]) {
-        this.maze.player.y--;
-        this.updateAfterPlayerMovement(playerCell);
-      }
+      this.moveUp();
     } else if ((event.key === 'ArrowRight') || (event.key === 'd') || (event.key === '6')) {
-      const playerCell: MazeCell = this.maze.cells.find(value => value.x === this.maze.player.x && value.y === this.maze.player.y)!;
-      if (playerCell && !playerCell.walls[1]) {
-        this.maze.player.x++;
-        this.updateAfterPlayerMovement(playerCell);
-      }
+      this.moveRight();
     } else if ((event.key === 'ArrowLeft') || (event.key === 'a') || (event.key === '4')) {
-      const playerCell: MazeCell = this.maze.cells.find(value => value.x === this.maze.player.x && value.y === this.maze.player.y)!;
-      if (playerCell && !playerCell.walls[3]) {
-        this.maze.player.x--;
-        this.updateAfterPlayerMovement(playerCell);
-      }
+      this.moveLeft();
     }
   }
 
+  public moveLeft(): void {
+    const playerCell: MazeCell = this.maze.cells.find(value => value.x === this.maze.player.x && value.y === this.maze.player.y)!;
+    if (playerCell && !playerCell.walls[3]) {
+      this.maze.player.x--;
+      this.updateAfterPlayerMovement(playerCell);
+    }
+  }
+
+  public moveRight(): void {
+    const playerCell: MazeCell = this.maze.cells.find(value => value.x === this.maze.player.x && value.y === this.maze.player.y)!;
+    if (playerCell && !playerCell.walls[1]) {
+      this.maze.player.x++;
+      this.updateAfterPlayerMovement(playerCell);
+    }
+  }
+
+  public moveUp(): void {
+    const playerCell: MazeCell = this.maze.cells.find(value => value.x === this.maze.player.x && value.y === this.maze.player.y)!;
+    if (playerCell && !playerCell.walls[0]) {
+      this.maze.player.y--;
+      this.updateAfterPlayerMovement(playerCell);
+    }
+  }
+
+  public moveDown(): void {
+    const playerCell: MazeCell = this.maze.cells.find(value => value.x === this.maze.player.x && value.y === this.maze.player.y)!;
+    if (playerCell && !playerCell.walls[2]) {
+      this.maze.player.y++;
+      this.updateAfterPlayerMovement(playerCell);
+    }
+  }
 
   private updateAfterPlayerMovement(playerCell: MazeCell): void {
     if (this.checkIfPlayerCollectsLoot()) {
@@ -111,6 +133,8 @@ export class MazeControlComponent implements OnInit {
   }
 
   public ngOnInit(): void {
+    // this.hammerManager = new Hammer(this.everything.nativeElement);
+    // this.hammerManager.get('swipe').set({threshold: 100});
 
     this.restartNewMaze();
     // this.maze = this.mazeGeneratorService.generateMaze(sideLengthMaze, sideLengthMaze);
@@ -118,5 +142,8 @@ export class MazeControlComponent implements OnInit {
     this.updateAfterPlayerMovement(this.maze.player);
   }
 
+  public swipe(event: Event): void {
+    console.log('event', event);
+  }
 
 }

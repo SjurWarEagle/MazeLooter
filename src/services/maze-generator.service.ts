@@ -43,6 +43,7 @@ export class MazeGeneratorService {
   }
 
   private walkMaze(maze: Maze, width: number, height: number): void {
+    let emergency = 100_000;
     while (this.cellStack.length !== 0) {
       const currentCell = this.cellStack.pop()!;
       this.storeWayToExit(maze, currentCell);
@@ -53,6 +54,11 @@ export class MazeGeneratorService {
         this.removeWalls(currentCell, selectedTarget);
         selectedTarget.visited = true;
         this.cellStack.push(selectedTarget);
+      }
+      emergency--;
+      if (emergency <= 0) {
+        console.log('Loop too long!');
+        break;
       }
     }
   }
@@ -85,6 +91,7 @@ export class MazeGeneratorService {
   }
 
   distributeLoot(maze: Maze, cnt: number, sideLengthMaze: number): void {
+    let emergency = 100_000;
     for (let i = 0; i < cnt; i++) {
       const lootX = Math.floor(Math.random() * sideLengthMaze);
       const lootY = Math.floor(Math.random() * sideLengthMaze);
@@ -100,6 +107,12 @@ export class MazeGeneratorService {
       } else {
         i--;
       }
+      emergency--;
+      if (emergency <= 0) {
+        console.log('Loot-Loop too long!');
+        break;
+      }
+
     }
   }
 }

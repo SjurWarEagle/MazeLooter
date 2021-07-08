@@ -6,6 +6,8 @@ import {MazeControlComponent} from './components/maze-control/maze-control.compo
 const routes: Routes = [
   {path: '', component: IntroComponent},
   {path: 'play', component: MazeControlComponent},
+  // directs all other routes to the main page
+  {path: '**', redirectTo: ''}
 ];
 
 @NgModule({

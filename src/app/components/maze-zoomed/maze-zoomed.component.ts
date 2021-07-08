@@ -1,14 +1,14 @@
-import {Component, ElementRef, Input, AfterViewInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, HostListener, Input, ViewChild} from '@angular/core';
 import {MazeCell} from '../../../types/maze-cell';
 import {Maze} from '../../../types/maze';
-import {minBy, maxBy} from 'lodash';
+import {maxBy, minBy} from 'lodash';
 
 @Component({
   selector: 'app-maze-zoomed',
   templateUrl: './maze-zoomed.component.html',
   styleUrls: ['./maze-zoomed.component.scss']
 })
-export class MazeZoomedComponent implements AfterViewInit {
+export class MazeZoomedComponent {
   private maxX = 1;
   private minX = 1;
   private maxY = 1;
@@ -20,7 +20,6 @@ export class MazeZoomedComponent implements AfterViewInit {
   public set maze(value: Maze) {
     this.localMaze = value;
     if (value && value.cells && value.cells.length > 1) {
-
       this.maxX = maxBy(this.localMaze.cells, (v) => v.x)!.x;
       this.minX = minBy(this.localMaze.cells, (v) => v.x)!.x;
       this.maxY = maxBy(this.localMaze.cells, (v) => v.y)!.y;
@@ -28,7 +27,7 @@ export class MazeZoomedComponent implements AfterViewInit {
       this.shiftX = Math.abs(this.maxX - this.minX) + 1;
       this.shiftY = Math.abs(this.maxY - this.minY) + 1;
     }
-
+    this.resize();
   }
 
   public cellWidth = 64;
@@ -43,48 +42,23 @@ export class MazeZoomedComponent implements AfterViewInit {
 
   @ViewChild('mazeareaZoomed', {static: true})
   // @ts-ignore
-  public mazeArea: ElementRef<HTMLCanvasElement>;
+  public mazeArea: ElementRef<HTMLElement>;
 
   // @ts-ignore
   public context: CanvasRenderingContext2D | null;
 
-  constructor() {
-  }
-
-  private drawWall(cell: MazeCell, ctx: CanvasRenderingContext2D, topLeftX: number, topLeftY: number): void {
-    ctx.fillStyle = 'black';
-    const x = Math.abs(topLeftX - cell.x);
-    const y = Math.abs(topLeftY - cell.y);
-
-    if (cell.walls[0]) {
-      ctx.moveTo(x * this.cellWidth, y * this.cellWidth);
-      ctx.lineTo((x + 1) * this.cellWidth, y * this.cellWidth);
-    }
-    if (cell.walls[1]) {
-      ctx.moveTo((x + 1) * this.cellWidth, y * this.cellWidth);
-      ctx.lineTo((x + 1) * this.cellWidth, (y + 1) * this.cellWidth);
-    }
-    if (cell.walls[2]) {
-      ctx.moveTo(x * this.cellWidth, (y + 1) * this.cellWidth);
-      ctx.lineTo((x + 1) * this.cellWidth, (y + 1) * this.cellWidth);
-    }
-    if (cell.walls[3]) {
-      ctx.moveTo(x * this.cellWidth, y * this.cellWidth);
-      ctx.lineTo(x * this.cellWidth, (y + 1) * this.cellWidth);
-    }
-    ctx.stroke();
-  }
-
-  private drawTile(cell: MazeCell, ctx: CanvasRenderingContext2D, topLeftX: number, topLeftY: number): void {
-    const image = new Image(512, 512);
-    image.src = this.getFilenameForFloorTile(cell.walls);
-    const x = Math.abs(topLeftX - cell.x);
-    const y = Math.abs(topLeftY - cell.y);
-    const that = this;
-
-    image.addEventListener('load', () => {
-      void ctx.drawImage(image, x * that.cellWidth, y * that.cellWidth, that.cellWidth, that.cellWidth);
-    }, false);
+  @HostListener('window:resize', ['$event'])
+  public resize(): void {
+    const delta = Math.max(this.shiftX, this.shiftY);
+    const width = Math.min(window.innerWidth, window.innerHeight);
+    this.cellWidth = Math.floor(width / (delta + 1));
+    // console.log('delta', delta);
+    // console.log('Math.min(' + event.target.innerWidth + ',' + event.target.innerHeight + ')');
+    // console.log('Math.min(' + window.innerWidth + ',' + window.innerHeight + ')');
+    // console.log(width);
+    // console.log(this.cellWidth);
+    // console.log(this.minX);
+    // console.log(this.maxX);
   }
 
   public getFilenameForSpecialFloorTile(cell: MazeCell): string {
@@ -134,16 +108,18 @@ export class MazeZoomedComponent implements AfterViewInit {
       return 'assets/SWN.png';
     } else if (walls[0] && walls[1] && !walls[2] && walls[3]) {
       return 'assets/WNE.png';
+    } else if (!walls[0] && !walls[1] && !walls[2] && !walls[3]) {
+      return 'assets/empty.png';
     }
-    return '';
+    console.log(walls);
+    return '???';
   }
 
   public getStyleForCell(cell: MazeCell): string {
-    const rc = `object-fit: cover; width: ${this.cellWidth}px; height: ${this.cellWidth}px; grid-column: ${cell.x}; grid-row   : ${cell.y}; z-index: -1;`;
-    // console.log('rc', rc);
-    return rc;
+    // const delta = this.cellWidth;
+    // return `width: ${delta}px; max-width: ${delta}px; height: ${delta}px; max-height: ${delta}px; grid-column: ${cell.x + 1}; grid-row: ${cell.y + 1};`;
+    const delta = 100;
+    return `object-fit: cover; width: ${delta}%; height: ${delta}%; grid-column: ${cell.x + 1 - this.minX}; grid-row: ${cell.y + 1 - this.minY};`;
   }
 
-  public ngAfterViewInit(): void {
-  }
 }
