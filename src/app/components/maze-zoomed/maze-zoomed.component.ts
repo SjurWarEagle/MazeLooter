@@ -109,7 +109,7 @@ export class MazeZoomedComponent {
     } else if (walls[0] && walls[1] && !walls[2] && walls[3]) {
       return 'assets/WNE.png';
     } else if (!walls[0] && !walls[1] && !walls[2] && !walls[3]) {
-      return 'assets/empty.png';
+      return 'assets/none.png';
     }
     console.log(walls);
     return '???';
