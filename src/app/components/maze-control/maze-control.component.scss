@@ -1,5 +1,4 @@
 .player-level {
-  padding: 1em;
   font-size: xxx-large;
   color: darkgreen;
   grid-area: level;
@@ -14,7 +13,6 @@
 }
 
 .player-loot {
-  padding: 1em;
   font-size: xxx-large;
   color: darkgreen;
   grid-area: loot;
@@ -28,6 +26,7 @@
 
 .about {
   grid-area: about;
+  justify-self: center;
 }
 
 @media only screen and (orientation: portrait) {
@@ -35,11 +34,13 @@
     height: 100%;
     background-color: #c0a4a4;
     display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: auto min-content;
+    //grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 1fr 1fr 1fr;
     grid-template-areas:
-    "zoomed zoomed zoomed"
-    "loot level about";
+    "zoomed"
+    "loot"
+    "level"
+    "about"
   }
 }
 
@@ -48,11 +49,11 @@
     height: 100%;
     background-color: lightgray;
     display: grid;
-    grid-template-columns: auto min-content;
-    grid-template-rows: 1fr;
+    grid-template-columns: auto 1fr 1fr;
+    //grid-template-rows: 1fr 1fr;
     grid-template-areas:
     "zoomed loot"
     "zoomed level"
-    "zoomed about";
+    "zoomed about"
   }
 }
