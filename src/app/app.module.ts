@@ -13,7 +13,10 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {FormsModule} from '@angular/forms';
 import * as Hammer from 'hammerjs';
-import { AboutComponent } from './components/about/about.component';
+import {AboutComponent} from './components/about/about.component';
+import {MatDialogModule} from '@angular/material/dialog';
+import {ConfirmExitLevelComponent} from './components/confirm-exit-level/confirm-exit-level.component';
+import {MatButtonModule} from '@angular/material/button';
 
 @Injectable()
 export class HammerConfig extends HammerGestureConfig {
@@ -29,16 +32,20 @@ export class HammerConfig extends HammerGestureConfig {
     MazeZoomedComponent,
     IntroComponent,
     MazeControlComponent,
-    AboutComponent
+    AboutComponent,
+    ConfirmExitLevelComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule,
     BrowserAnimationsModule,
+    AppRoutingModule,
     MatCheckboxModule,
     MatButtonToggleModule,
     HammerModule,
-    FormsModule
+    MatDialogModule,
+    FormsModule,
+    MatButtonModule,
+    MatDialogModule,
   ],
   providers: [
     {
@@ -46,7 +53,10 @@ export class HammerConfig extends HammerGestureConfig {
       useClass: HammerConfig
     }
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [
+    ConfirmExitLevelComponent
+  ]
 })
 export class AppModule {
   constructor() {

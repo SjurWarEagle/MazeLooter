@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Player} from '../types/player';
 
 @Injectable({
@@ -6,6 +6,8 @@ import {Player} from '../types/player';
 })
 export class DataHolderService {
   public player: Player = new Player();
+  public confirmDialogOpen = false;
 
-  constructor() { }
+  constructor() {
+  }
 }

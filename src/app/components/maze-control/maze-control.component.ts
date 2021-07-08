@@ -6,6 +6,8 @@ import {MazeCell} from '../../../types/maze-cell';
 import {MazeZoomedComponent} from '../maze-zoomed/maze-zoomed.component';
 import {DataHolderService} from '../../../services/data-holder.service';
 import {ElementRef} from '@angular/core';
+import {ConfirmExitLevelComponent} from '../confirm-exit-level/confirm-exit-level.component';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-maze-control',
@@ -28,14 +30,18 @@ export class MazeControlComponent implements OnInit {
 
   public maze: Maze = new Maze();
   private radius = 3;
-  // @ts-ignore
-  private hammerManager: HammerManager = undefined;
 
-  constructor(private mazeGeneratorService: MazeGeneratorService, public dataHolderService: DataHolderService) {
+  constructor(private mazeGeneratorService: MazeGeneratorService,
+              public dataHolderService: DataHolderService,
+              public dialog: MatDialog
+  ) {
   }
 
   @HostListener('window:keydown', ['$event'])
   public handleKeyDown(event: KeyboardEvent): void {
+    if (this.dataHolderService.confirmDialogOpen) {
+      return;
+    }
     if ((event.key === 'ArrowDown') || (event.key === 's') || (event.key === '2')) {
       this.moveDown();
     } else if ((event.key === 'ArrowUp') || (event.key === 'w') || (event.key === '8')) {
@@ -82,18 +88,25 @@ export class MazeControlComponent implements OnInit {
   private updateAfterPlayerMovement(playerCell: MazeCell): void {
     if (this.checkIfPlayerCollectsLoot()) {
     } else if (this.checkIfPlayerReachedExit()) {
-      this.dataHolderService.player.level++;
-      this.restartNewMaze();
-    } else {
-      requestAnimationFrame(() => {
-        if (this.mazeDisplay) {
-          this.mazeDisplay.drawRegion(playerCell!, 2);
+      const dialogRef = this.dialog.open(ConfirmExitLevelComponent);
+      this.dataHolderService.confirmDialogOpen = true;
+
+      dialogRef.afterClosed().subscribe(result => {
+        this.dataHolderService.confirmDialogOpen = false;
+        // console.log('result', result);
+        if (result === true) {
+          this.dataHolderService.player.level++;
+          this.restartNewMaze();
         }
-        const center = this.maze.player;
-        // this.mazeZoomed.drawMaze();
-        const cellsToRedraw = this.maze.cells.filter(value => value.x <= center.x + this.radius && value.x >= center.x - this.radius && value.y <= center.y + this.radius && value.y >= center.y - this.radius);
-        this.cloneMazeSection(cellsToRedraw);
       });
+    } else {
+      if (this.mazeDisplay) {
+        this.mazeDisplay.drawRegion(playerCell!, 2);
+      }
+      const center = this.maze.player;
+      // this.mazeZoomed.drawMaze();
+      const cellsToRedraw = this.maze.cells.filter(value => value.x <= center.x + this.radius && value.x >= center.x - this.radius && value.y <= center.y + this.radius && value.y >= center.y - this.radius);
+      this.cloneMazeSection(cellsToRedraw);
     }
   }
 
